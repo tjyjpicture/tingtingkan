@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Difficulty, Question, GameSession } from '@/lib/types';
@@ -26,7 +26,7 @@ const speak = (text: string): Promise<void> => {
   });
 };
 
-export default function GamePage() {
+function GameContent() {
   const searchParams = useSearchParams();
   const difficulty = (searchParams.get('difficulty') as Difficulty) || 'simple';
 
@@ -282,5 +282,20 @@ export default function GamePage() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function GamePage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="text-xl">加载中...</div>
+        </div>
+      </main>
+    }>
+      <GameContent />
+    </Suspense>
   );
 }
